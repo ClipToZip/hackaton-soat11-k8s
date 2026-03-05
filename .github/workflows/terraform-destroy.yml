@@ -1,0 +1,57 @@
+name: Destroy infra AWS terraform
+
+# Gatilhos para execução do workflow
+on:
+  workflow_dispatch:
+
+jobs:
+  terraform:
+    name: Destroy infra AWS with Terraform
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout do código
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Setup Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.13.3
+
+      # 3. Configuração das credenciais AWS
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      # 4. Inicialização do Terraform  
+      - name: Terraform Init
+        working-directory: ./terraform
+        run: terraform init -reconfigure
+
+      # 5. Aplicação do Terraform
+      - name: Terraform Destroy
+        working-directory: ./terraform
+        run: |
+            terraform destroy -auto-approve -input=false \
+                -var "db_name"=${{ secrets.DB_NAME }} \
+                -var "db_username"=${{ secrets.DB_USERNAME }} \
+                -var "db_password"=${{ secrets.DB_PASSWORD }} \
+                -var "db_url"=${{ secrets.DB_URL }} \
+                -var "redis_host"=${{ secrets.REDIS_HOST }} \
+                -var "cliptozip_events_url"=${{ secrets.CLIPTOZIP_EVENTS_URL }} \
+                -var "cliptozip_notifications_url"=${{ secrets.CLIPTOZIP_NOTIFICATIONS_URL }} \
+                -var "cliptozip_notifications_name"=${{ secrets.CLIPTOZIP_NOTIFICATIONS_NAME }} \
+                -var "s3_bucket_name"=${{ secrets.S3_BUCKET_NAME }} \
+                -var "spring_mail_username"=${{ secrets.SPRING_MAIL_USERNAME }} \
+                -var "spring_mail_password"=${{ secrets.SPRING_MAIL_PASSWORD }} \
+                -var "auth_image_url"=${{ secrets.AUTH_IMAGE_URL }} \
+                -var "videosvc_image_url"=${{ secrets.VIDEOSVC_IMAGE_URL }} \
+                -var "videoprc_image_url"=${{ secrets.VIDEOPRC_IMAGE_URL }} \
+                -var "notification_image_url"=${{ secrets.NOTIFICATION_IMAGE_URL }} \
+                -var "aws_access_key_id"=${{ secrets.AWS_ACCESS_KEY_ID }} \
+                -var "aws_secret_access_key"=${{ secrets.AWS_SECRET_ACCESS_KEY }}

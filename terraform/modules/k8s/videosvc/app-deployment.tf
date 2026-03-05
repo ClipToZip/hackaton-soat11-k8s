@@ -1,8 +1,8 @@
-resource "kubernetes_deployment" "cliptozip_auth" {
+resource "kubernetes_deployment" "cliptozip_videosvc" {
   metadata {
-    name = "cliptozip-auth"
+    name = "cliptozip-videosvc"
     labels = {
-      app = "cliptozip-auth"
+      app = "cliptozip-videosvc"
     }
   }
 
@@ -11,21 +11,21 @@ resource "kubernetes_deployment" "cliptozip_auth" {
 
     selector {
       match_labels = {
-        app = "cliptozip-auth"
+        app = "cliptozip-videosvc"
       }
     }
 
     template {
       metadata {
         labels = {
-          app = "cliptozip-auth"
+          app = "cliptozip-videosvc"
         }
       }
 
       spec {
         container {
-          name              = "cliptozip-auth"
-          image             = var.auth_image_url
+          name              = "cliptozip-videosvc"
+          image             = var.videosvc_image_url
           image_pull_policy = "Always"
 
           port {
@@ -64,38 +64,58 @@ resource "kubernetes_deployment" "cliptozip_auth" {
           }
 
           env {
-            name = "SPRING_DATA_REDIS_HOST"
+            name = "CLIPTOZIP_EVENTS_URL"
             value_from {
               secret_key_ref {
                 name = "cliptozip-secret"
-                key  = "REDIS_HOST"
+                key = "CLIPTOZIP_EVENTS_URL"
               }
             }
           }
 
           env {
-            name = "SPRING_DATA_REDIS_PORT"
+            name = "S3_BUCKET_NAME"
             value_from {
               secret_key_ref {
                 name = "cliptozip-secret"
-                key  = "REDIS_PORT"
+                key = "S3_BUCKET_NAME"
               }
             }
           }
 
           env {
-            name = "REDIS_SSL_ENABLED"
-            value = "true"
+            name = "AWS_REGION"
+            value_from {
+              secret_key_ref{
+                name = "cliptozip-secret"
+                key = "AWS_REGION"
+              }
+            }
+          }
+          
+          env {
+            name = "AWS_ACCESS_KEY_ID"
+            value_from {
+              secret_key_ref{
+                name = "cliptozip-secret"
+                key  = "AWS_ACCESS_KEY_ID"
+              }
+            }
           }
 
           env {
-            name = "REDIS_TIMEOUT"
-            value = "10000"
+            name = "AWS_SECRET_ACCESS_KEY"
+            value_from {
+              secret_key_ref{
+                name = "cliptozip-secret"
+                key = "AWS_SECRET_ACCESS_KEY"
+              }
+            }
           }
 
           env {
-            name = "REDIS_CONNECT_TIMEOUT"
-            value = "10000"
+            name = "AUTH_API_URL"
+            value = "http://cliptozip-auth:80/auth/validate-token"
           }
 
           liveness_probe {

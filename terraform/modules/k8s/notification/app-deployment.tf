@@ -1,8 +1,8 @@
-resource "kubernetes_deployment" "cliptozip_auth" {
+resource "kubernetes_deployment" "cliptozip_notification" {
   metadata {
-    name = "cliptozip-auth"
+    name = "cliptozip-notification"
     labels = {
-      app = "cliptozip-auth"
+      app = "cliptozip-notification"
     }
   }
 
@@ -11,21 +11,21 @@ resource "kubernetes_deployment" "cliptozip_auth" {
 
     selector {
       match_labels = {
-        app = "cliptozip-auth"
+        app = "cliptozip-notification"
       }
     }
 
     template {
       metadata {
         labels = {
-          app = "cliptozip-auth"
+          app = "cliptozip-notification"
         }
       }
 
       spec {
         container {
-          name              = "cliptozip-auth"
-          image             = var.auth_image_url
+          name              = "cliptozip-notification"
+          image             = var.notification_image_url
           image_pull_policy = "Always"
 
           port {
@@ -34,69 +34,103 @@ resource "kubernetes_deployment" "cliptozip_auth" {
           }
 
           env {
-            name = "SPRING_DATASOURCE_URL"
+            name = "AWS_REGION"
             value_from {
-              config_map_key_ref {
-                name = "cliptozip-configmap"
-                key  = "SPRING_DATASOURCE_URL"
-              }
-            }
-          }
-
-          env {
-            name = "SPRING_DATASOURCE_USERNAME"
-            value_from {
-              secret_key_ref {
+              secret_key_ref{
                 name = "cliptozip-secret"
-                key  = "SPRING_DATASOURCE_USERNAME"
+                key = "AWS_REGION"
               }
             }
           }
-
+          
           env {
-            name = "SPRING_DATASOURCE_PASSWORD"
+            name = "AWS_ACCESS_KEY_ID"
             value_from {
-              secret_key_ref {
+              secret_key_ref{
                 name = "cliptozip-secret"
-                key  = "SPRING_DATASOURCE_PASSWORD"
+                key  = "AWS_ACCESS_KEY_ID"
               }
             }
           }
 
           env {
-            name = "SPRING_DATA_REDIS_HOST"
+            name = "AWS_SECRET_ACCESS_KEY"
             value_from {
-              secret_key_ref {
+              secret_key_ref{
                 name = "cliptozip-secret"
-                key  = "REDIS_HOST"
+                key = "AWS_SECRET_ACCESS_KEY"
               }
             }
           }
 
           env {
-            name = "SPRING_DATA_REDIS_PORT"
+            name = "SPRING_MAIL_HOST"
+            value = "smtp.gmail.com"
+          }
+
+          env {
+            name = "SPRING_MAIL_PORT"
+            value = "587"
+          }
+
+          env {
+            name = "SPRING_MAIL_USERNAME"
             value_from {
-              secret_key_ref {
+              secret_key_ref{
                 name = "cliptozip-secret"
-                key  = "REDIS_PORT"
+                key = "SPRING_MAIL_USERNAME"
               }
             }
           }
 
           env {
-            name = "REDIS_SSL_ENABLED"
+            name = "SPRING_MAIL_PASSWORD"
+            value_from {
+              secret_key_ref{
+                name = "cliptozip-secret"
+                key = "SPRING_MAIL_PASSWORD"
+              }
+            }
+          }
+
+          env {
+            name = "SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH"
+            value = "true"
+          }
+          env {
+            name = "SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE"
             value = "true"
           }
 
           env {
-            name = "REDIS_TIMEOUT"
-            value = "10000"
+            name = "APP_SQS_QUEUE_NAME"
+            value_from {
+              secret_key_ref{
+                name = "cliptozip-secret"
+                key = "CLIPTOZIP_NOTIFICATIONS_NAME"
+              }
+            }
           }
 
           env {
-            name = "REDIS_CONNECT_TIMEOUT"
-            value = "10000"
+            name = "APP_EMAIL_FROM"
+            value_from {
+              secret_key_ref{
+                name = "cliptozip-secret"
+                key = "SPRING_MAIL_USERNAME"
+              }
+            }
           }
+
+          env {
+            name = "APP_DEDUP_ENABLES"
+            value = "true"
+          }
+          env {
+            name = "APP_DEDUP_TTL_SECONDS"
+            value = "3600"
+          }
+
 
           liveness_probe {
             http_get {

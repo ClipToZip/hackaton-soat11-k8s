@@ -106,8 +106,57 @@ variable "redis_port" {
   default     = "6379"
 }
 
+variable "cliptozip_events_url" {
+    description = "URL do serviço SQS de eventos"
+    type        = string
+}
+
+variable "cliptozip_notifications_url" {
+    description = "URL do serviço SQS de notificações"
+    type        = string
+}
+
+variable "cliptozip_notifications_name" {
+    description = "Nome da fila SQS de notificações"
+    type        = string
+}
+
+variable "s3_bucket_name" {
+    description = "Nome do bucket S3 para armazenamento de vídeos"
+    type        = string
+}
+
+variable "spring_mail_username" {
+    description = "Username para configuração do Spring Mail"
+    type        = string
+}
+
+variable "spring_mail_password" {
+    description = "Password para configuração do Spring Mail"
+    type        = string
+    sensitive   = true
+}
+
 variable "auth_image_url" {
   description = "URL da imagem do Auth"
+  type        = string
+  default     = ""
+}
+
+variable "videosvc_image_url" {
+  description = "URL da imagem do serviço videosvc"
+  type        = string
+  default     = ""
+}
+
+variable "videoprc_image_url" {
+  description = "URL da imagem do serviço videoprc"
+  type        = string
+  default     = ""
+}
+
+variable "notification_image_url" {
+  description = "URL da imagem do serviço notification"
   type        = string
   default     = ""
 }

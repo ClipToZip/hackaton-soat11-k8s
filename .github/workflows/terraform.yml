@@ -93,21 +93,15 @@ jobs:
           echo "📋 OUTPUTS DA INFRAESTRUTURA"
           echo "===================================="
           terraform output -json | jq -r '
-            "🌐 VPC ID: \(.vpc_id.value)",
+            "🔐 Auth Service:",
+            "   Load Balancer: \(.cliptozip_auth_load_balancer_hostname.value)",
             "",
-            "🗄️  RDS PostgreSQL:",
-            "   Endpoint: \(.rds_endpoint.value)",
-            "   Database: \(.rds_database_name.value)",
+            "🎬 Video Service:",
+            "   Load Balancer: \(.cliptozip_videosvc_load_balancer_hostname.value)",
             "",
-            "⚡ Redis Serverless:",
-            "   Endpoint: \(.redis_endpoint.value)",
-            "   Port: \(.redis_port.value)",
+            "⚙️  Video Processing:",
+            "   Load Balancer: \(.cliptozip_videoprc_load_balancer_hostname.value)",
             "",
-            "📦 S3 Bucket:",
-            "   Name: \(.s3_bucket_name.value)",
-            "   ARN: \(.s3_bucket_arn.value)",
-            "",
-            "📨 SQS Queues:",
-            "   Events: \(.cliptozip_events_queue_url.value)",
-            "   Notifications: \(.cliptozip_notifications_queue_url.value)"
+            "📧 Notification Service:",
+            "   Load Balancer: \(.cliptozip_notification_load_balancer_hostname.value)"
           '

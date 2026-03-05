@@ -36,4 +36,22 @@ jobs:
       # 5. Aplicação do Terraform
       - name: Terraform Destroy
         working-directory: ./terraform
-        run: terraform destroy -auto-approve -input=false -var "db_name"=${{ secrets.DB_NAME }} -var "db_username"=${{ secrets.DB_USERNAME }} -var "db_password"=${{ secrets.DB_PASSWORD }} -var "db_url"=${{ secrets.DB_URL }} -var "redis_host"=${{ secrets.REDIS_HOST }} -var "cliptozip_events_url"=${{ secrets.CLIPTOZIP_EVENTS_URL }} -var "cliptozip_notifications_url"=${{ secrets.CLIPTOZIP_NOTIFICATIONS_URL }} -var "cliptozip_notifications_name"=${{ secrets.CLIPTOZIP_NOTIFICATIONS_NAME }} -var "s3_bucket_name"=${{ secrets.S3_BUCKET_NAME }} -var "spring_mail_username"=${{ secrets.SPRING_MAIL_USERNAME }} -var "spring_mail_password"=${{ secrets.SPRING_MAIL_PASSWORD }} -var "auth_image_url"=${{ secrets.AUTH_IMAGE_URL }} -var "videosvc_image_url"=${{ secrets.VIDEOSVC_IMAGE_URL }} -var "videoprc_image_url"=${{ secrets.VIDEOPRC_IMAGE_URL }} -var "notification_image_url"=${{ secrets.NOTIFICATION_IMAGE_URL }} -var "aws_access_key_id"=${{ secrets.AWS_ACCESS_KEY_ID }} -var "aws_secret_access_key"=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        env:
+          TF_VAR_db_name: ${{ secrets.DB_NAME }}
+          TF_VAR_db_username: ${{ secrets.DB_USERNAME }}
+          TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
+          TF_VAR_db_url: ${{ secrets.DB_URL }}
+          TF_VAR_redis_host: ${{ secrets.REDIS_HOST }}
+          TF_VAR_cliptozip_events_url: ${{ secrets.CLIPTOZIP_EVENTS_URL }}
+          TF_VAR_cliptozip_notifications_url: ${{ secrets.CLIPTOZIP_NOTIFICATIONS_URL }}
+          TF_VAR_cliptozip_notifications_name: ${{ secrets.CLIPTOZIP_NOTIFICATIONS_NAME }}
+          TF_VAR_s3_bucket_name: ${{ secrets.S3_BUCKET_NAME }}
+          TF_VAR_spring_mail_username: ${{ secrets.SPRING_MAIL_USERNAME }}
+          TF_VAR_spring_mail_password: ${{ secrets.SPRING_MAIL_PASSWORD }}
+          TF_VAR_auth_image_url: ${{ secrets.AUTH_IMAGE_URL }}
+          TF_VAR_videosvc_image_url: ${{ secrets.VIDEOSVC_IMAGE_URL }}
+          TF_VAR_videoprc_image_url: ${{ secrets.VIDEOPRC_IMAGE_URL }}
+          TF_VAR_notification_image_url: ${{ secrets.NOTIFICATION_IMAGE_URL }}
+          TF_VAR_aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          TF_VAR_aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: terraform destroy -auto-approve -input=false
